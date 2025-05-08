@@ -1,4 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import Timer from "./components/Timer";
+import TaskInput from "./components/TaskInput";
+import BreathingExercise from "./components/BreathingExercise";
+import DistractionJournal from "./components/DistractionJournal";
+import ProgressGarden from "./components/ProgressGarden";
+import Achievements from "./components/Achievements";
+import WhiteNoisePlayer from "./components/WhiteNoisePlayer";
+import TimerSettings from "./components/TimerSettings";
+import BookQuotes from "./components/BookQuotes";
+import TabNavigation from "./components/TabNavigation";
+import PWAPrompt from "./components/PWAPrompt";
+import { getWeekNumber } from "./utils/dateUtils";
+import { saveToLocalStorage, getFromLocalStorage } from "./utils/localStorage";
 
 const App = () => {
   // Theme options
@@ -517,7 +530,7 @@ const App = () => {
         return;
       }
 
-      if (e.key === " " || e.key === "Spacebar") {
+      if (e.key === " " || e.key === "spacer") {
         e.preventDefault();
         isActive ? pauseTimer() : startTimer();
       } else if (e.key === "Escape") {
@@ -733,17 +746,6 @@ const App = () => {
 
     updateStreak();
   }, []);
-
-  // Helper function to get week number
-  const getWeekNumber = (date) => {
-    const d = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-    );
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
-  };
 
   // Check for new achievements
   const checkForAchievements = (currentStreak) => {
@@ -1276,9 +1278,6 @@ const App = () => {
 
   const playWhiteNoise = (soundIndex) => {
     // In a real app, you would play actual audio
-    setCurrentSound(soundIndex);
-    setSoundPlaying(!soundPlaying);
-
     if (soundIndex === currentSound && soundPlaying) {
       setSoundPlaying(false);
     } else {
@@ -1405,571 +1404,6 @@ const App = () => {
     }
   };
 
-  // Render garden based on progress level
-  const renderGarden = () => {
-    if (garden === 0) {
-      return (
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🌱</div>
-          <div className="text-sm font-medium">Seed</div>
-        </div>
-      );
-    } else if (garden === 1) {
-      return (
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🌿</div>
-          <div className="text-sm font-medium">Sprout</div>
-        </div>
-      );
-    } else if (garden === 2) {
-      return (
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🪴</div>
-          <div className="text-sm font-medium">Small Plant</div>
-        </div>
-      );
-    } else if (garden === 3) {
-      return (
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🌳</div>
-          <div className="text-sm font-medium">Healthy Tree</div>
-        </div>
-      );
-    } else if (garden === 4) {
-      return (
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🌲</div>
-          <div className="text-sm font-medium">Mature Tree</div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🌴🌲🌳</div>
-          <div className="text-sm font-medium">Beautiful Garden</div>
-        </div>
-      );
-    }
-  };
-
-  // Render achievements
-  const renderAchievements = () => {
-    return (
-      <div className="grid grid-cols-3 gap-2">
-        <div
-          className={`text-center p-2 rounded-lg border ${
-            achievements.includes("streak-3")
-              ? "bg-yellow-100 border-yellow-300"
-              : "bg-gray-100 border-gray-200 opacity-50"
-          }`}
-        >
-          <div className="text-2xl mb-1">🔥</div>
-          <div className="text-xs font-medium">3-day streak</div>
-        </div>
-        <div
-          className={`text-center p-2 rounded-lg border ${
-            achievements.includes("streak-7")
-              ? "bg-yellow-100 border-yellow-300"
-              : "bg-gray-100 border-gray-200 opacity-50"
-          }`}
-        >
-          <div className="text-2xl mb-1">🔥</div>
-          <div className="text-xs font-medium">7-day streak</div>
-        </div>
-        <div
-          className={`text-center p-2 rounded-lg border ${
-            achievements.includes("streak-14")
-              ? "bg-yellow-100 border-yellow-300"
-              : "bg-gray-100 border-gray-200 opacity-50"
-          }`}
-        >
-          <div className="text-2xl mb-1">🔥</div>
-          <div className="text-xs font-medium">14-day streak</div>
-        </div>
-        <div
-          className={`text-center p-2 rounded-lg border ${
-            achievements.includes("sessions-1")
-              ? "bg-green-100 border-green-300"
-              : "bg-gray-100 border-gray-200 opacity-50"
-          }`}
-        >
-          <div className="text-2xl mb-1">🎯</div>
-          <div className="text-xs font-medium">1 session</div>
-        </div>
-        <div
-          className={`text-center p-2 rounded-lg border ${
-            achievements.includes("sessions-10")
-              ? "bg-green-100 border-green-300"
-              : "bg-gray-100 border-gray-200 opacity-50"
-          }`}
-        >
-          <div className="text-2xl mb-1">🏆</div>
-          <div className="text-xs font-medium">10 sessions</div>
-        </div>
-        <div
-          className={`text-center p-2 rounded-lg border ${
-            achievements.includes("sessions-25")
-              ? "bg-green-100 border-green-300"
-              : "bg-gray-100 border-gray-200 opacity-50"
-          }`}
-        >
-          <div className="text-2xl mb-1">⭐</div>
-          <div className="text-xs font-medium">25 sessions</div>
-        </div>
-      </div>
-    );
-  };
-
-  // Render breathing exercise
-  const renderBreathingExercise = () => {
-    const phases = {
-      inhale: { text: "Breathe In", duration: 4, color: "bg-blue-500" },
-      hold: { text: "Hold", duration: 4, color: "bg-purple-500" },
-      exhale: { text: "Breathe Out", duration: 6, color: "bg-green-500" },
-    };
-
-    const current = phases[breathingPhase];
-
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Breathing Exercise
-        </h3>
-
-        {breathingActive ? (
-          <div className="mb-6">
-            <div
-              className={`text-center py-10 rounded-lg ${current.color} text-white mb-4`}
-            >
-              <div className="text-2xl font-medium mb-2">{current.text}</div>
-              <div className="inline-block w-24 h-24 rounded-full border-4 border-white flex items-center justify-center">
-                <div
-                  className={`w-20 h-20 rounded-full bg-white bg-opacity-50 transition-all duration-1000 ease-in-out ${
-                    breathingPhase === "inhale"
-                      ? "transform scale-100"
-                      : breathingPhase === "hold"
-                      ? "transform scale-100"
-                      : "transform scale-50"
-                  }`}
-                ></div>
-              </div>
-            </div>
-            <button
-              onClick={toggleBreathingExercise}
-              className={`w-full px-4 py-3 ${themes[currentTheme].primary} text-white rounded-lg font-medium`}
-            >
-              Stop Breathing Exercise
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={toggleBreathingExercise}
-            className={`w-full px-4 py-3 ${themes[currentTheme].primary} text-white rounded-lg font-medium`}
-          >
-            Start Breathing Exercise
-          </button>
-        )}
-      </div>
-    );
-  };
-
-  // Render distraction journal
-  const renderDistractionJournal = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Distraction Journal
-        </h3>
-
-        <div className="mb-4 flex">
-          <input
-            type="text"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md"
-            placeholder="Note what distracted you..."
-            value={currentDistraction}
-            onChange={handleDistractionsChange}
-          />
-          <button
-            onClick={saveDistraction}
-            className={`px-4 py-2 ${themes[currentTheme].primary} text-white rounded-r-md`}
-          >
-            Save
-          </button>
-        </div>
-
-        {distractions.length > 0 && (
-          <div>
-            <h4 className="font-medium mb-2">Distraction History</h4>
-            <div className="max-h-40 overflow-y-auto">
-              {distractions.map((distraction) => (
-                <div
-                  key={distraction.id}
-                  className="p-2 border-b border-gray-200 text-sm"
-                >
-                  <div>{distraction.text}</div>
-                  <div className="text-xs text-gray-500">
-                    {new Date(distraction.date).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Render eye rest reminder
-  const renderEyeRestReminder = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Eye Rest Reminder
-        </h3>
-
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg text-sm">
-          <p>
-            Follow the 20-20-20 rule: Every 20 minutes, look 20 feet away for 20
-            seconds.
-          </p>
-        </div>
-
-        <button
-          onClick={toggleEyeRest}
-          className={`w-full px-4 py-2 ${
-            eyeRestEnabled ? "bg-red-500" : themes[currentTheme].primary
-          } text-white rounded-md`}
-        >
-          {eyeRestEnabled ? "Disable Reminders" : "Enable Reminders"}
-        </button>
-      </div>
-    );
-  };
-
-  // Render white noise player
-  const renderWhiteNoisePlayer = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Focus Sounds
-        </h3>
-
-        <div className="grid grid-cols-3 gap-2">
-          {whiteNoiseOptions.map((sound, index) => (
-            <button
-              key={index}
-              onClick={() => playWhiteNoise(index)}
-              className={`p-3 rounded-lg text-center ${
-                currentSound === index && soundPlaying
-                  ? themes[currentTheme].primary + " text-white"
-                  : "bg-gray-100"
-              }`}
-            >
-              <div className="text-2xl">{sound.icon}</div>
-              <div className="text-xs mt-1">{sound.name}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // Render challenges
-  const renderChallenges = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Challenges
-        </h3>
-
-        <div className="mb-4">
-          <h4 className="font-medium mb-2">Active Challenges</h4>
-          <div className="space-y-2">
-            {challenges.map((challenge) => {
-              const isActive = activeChallenges.includes(challenge.id);
-              const isCompleted = completedChallenges.includes(challenge.id);
-
-              if (isCompleted) return null;
-
-              return (
-                <div
-                  key={challenge.id}
-                  className={`p-3 rounded-lg border flex items-center gap-3 ${
-                    isActive ? "border-blue-300 bg-blue-50" : "border-gray-200"
-                  }`}
-                >
-                  <div className="text-2xl">{challenge.icon}</div>
-                  <div className="flex-1">
-                    <div className="font-medium">{challenge.name}</div>
-                    <div className="text-xs text-gray-600">
-                      {challenge.description}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => toggleActiveChallenge(challenge.id)}
-                    className={`px-3 py-1 rounded-md text-xs font-medium ${
-                      isActive
-                        ? "bg-red-500 text-white"
-                        : themes[currentTheme].primary + " text-white"
-                    }`}
-                  >
-                    {isActive ? "✕" : "+"}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {completedChallenges.length > 0 && (
-          <div>
-            <h4 className="font-medium mb-2">Completed Challenges</h4>
-            <div className="space-y-2">
-              {challenges
-                .filter((c) => completedChallenges.includes(c.id))
-                .map((challenge) => (
-                  <div
-                    key={challenge.id}
-                    className="p-3 rounded-lg border border-green-300 bg-green-50 flex items-center gap-3"
-                  >
-                    <div className="text-2xl">{challenge.icon}</div>
-                    <div className="flex-1">
-                      <div className="font-medium">{challenge.name}</div>
-                      <div className="text-xs text-gray-600">
-                        {challenge.description}
-                      </div>
-                    </div>
-                    <div className="text-green-500 text-xl">✓</div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Render book quotes
-  const renderBookQuotes = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Book Quotes
-        </h3>
-
-        <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 italic">
-          "{currentQuote}"
-        </div>
-      </div>
-    );
-  };
-
-  // Render UI customization panel
-  const renderUICustomization = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Customize Interface
-        </h3>
-
-        <div className="mb-4">
-          <h4 className="font-medium mb-2">Active Features</h4>
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {Object.values(uiModules).map((module) => (
-              <div
-                key={module.id}
-                className={`p-2 rounded-lg border flex flex-col items-center 
-                  ${
-                    activeModules.includes(module.id)
-                      ? "border-blue-300 bg-blue-50"
-                      : "border-gray-200"
-                  }`}
-              >
-                <div className="text-xl mb-1">{module.icon}</div>
-                <div className="text-xs font-medium text-center">
-                  {module.name}
-                </div>
-                <button
-                  onClick={() => toggleModuleActive(module.id)}
-                  className={`mt-2 px-2 py-1 rounded text-xs ${
-                    activeModules.includes(module.id)
-                      ? module.isCore
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-red-500 text-white"
-                      : `${themes[currentTheme].primary} text-white`
-                  }`}
-                  disabled={module.isCore && activeModules.includes(module.id)}
-                >
-                  {activeModules.includes(module.id) ? "Remove" : "Add"}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <h4 className="font-medium mb-2">Interface Profiles</h4>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {Object.entries(interfaceProfiles).map(([id, profile]) => (
-              <button
-                key={id}
-                onClick={() => switchProfile(id)}
-                className={`px-3 py-1.5 rounded-md text-sm ${
-                  currentProfile === id
-                    ? `${themes[currentTheme].primary} text-white`
-                    : "bg-gray-100"
-                }`}
-              >
-                {profile.name}
-              </button>
-            ))}
-
-            {/* Custom profiles */}
-            {Object.entries(customProfiles).map(([id, profile]) => (
-              <div key={id} className="flex items-center">
-                <button
-                  onClick={() => switchProfile(id)}
-                  className={`px-3 py-1.5 rounded-l-md text-sm ${
-                    currentProfile === id
-                      ? `${themes[currentTheme].primary} text-white`
-                      : "bg-gray-100"
-                  }`}
-                >
-                  {profile.name}
-                </button>
-                <button
-                  onClick={() => deleteCustomProfile(id)}
-                  className="py-1.5 px-2 bg-red-500 text-white rounded-r-md text-sm"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-
-            <button
-              onClick={() => setEditingProfile(true)}
-              className="px-3 py-1.5 rounded-md text-sm bg-gray-200"
-            >
-              + Save Current
-            </button>
-          </div>
-
-          {editingProfile && (
-            <div className="flex mb-2">
-              <input
-                type="text"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md"
-                placeholder="Profile name"
-                value={newProfileName}
-                onChange={(e) => setNewProfileName(e.target.value)}
-              />
-              <button
-                onClick={createCustomProfile}
-                className={`px-4 py-2 ${themes[currentTheme].primary} text-white rounded-r-md`}
-              >
-                Save
-              </button>
-            </div>
-          )}
-        </div>
-
-        <button
-          onClick={toggleHighFocusMode}
-          className={`w-full px-4 py-3 ${
-            highFocusMode ? "bg-red-500" : themes[currentTheme].primary
-          } text-white rounded-lg font-medium flex items-center justify-center gap-2`}
-        >
-          <span>
-            {highFocusMode ? "Exit Focus Mode" : "Enter High Focus Mode"}
-          </span>
-          <span>{highFocusMode ? "👁️" : "🔍"}</span>
-        </button>
-      </div>
-    );
-  };
-
-  // Render keyboard shortcuts help
-  const renderKeyboardShortcuts = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3
-            className={`text-lg font-medium ${themes[currentTheme].textPrimary}`}
-          >
-            Keyboard Shortcuts
-          </h3>
-          <button
-            onClick={() => setShowShortcutHelp(false)}
-            className="text-gray-500 text-sm"
-          >
-            Close
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {keyboardShortcuts.map((shortcut, index) => (
-            <div key={index} className="flex justify-between">
-              <span className="px-2 py-1 bg-gray-100 rounded font-mono text-sm">
-                {shortcut.key}
-              </span>
-              <span className="text-sm">{shortcut.description}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // Render offline capabilities information
-  const renderOfflineInfo = () => {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
-        <h3
-          className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-        >
-          Offline Capabilities
-        </h3>
-
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg text-sm">
-          <p>
-            ADHD Timer works offline! Add it to your home screen for a better
-            experience.
-          </p>
-        </div>
-
-        <div className="flex flex-col space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-green-500"></div>
-            <p className="text-sm">Ready for offline use</p>
-          </div>
-
-          {installable && (
-            <button
-              onClick={promptInstall}
-              className={`px-4 py-2 ${themes[currentTheme].primary} text-white rounded-md text-sm`}
-            >
-              Add to Home Screen
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   // Determine if a module should be shown based on active modules and high focus mode
   const isModuleVisible = (moduleId) => {
     if (highFocusMode) {
@@ -1996,59 +1430,28 @@ const App = () => {
     >
       {/* PWA Ready Banner */}
       {showOfflinePrompt && (
-        <div className="fixed top-0 left-0 right-0 p-4 bg-green-500 text-white text-center shadow-md z-50">
-          <div className="flex items-center justify-between max-w-3xl mx-auto">
-            <p>{pwaMessages.readyOffline}</p>
-            <button
-              onClick={() => setShowOfflinePrompt(false)}
-              className="ml-4 bg-white bg-opacity-20 rounded-full w-6 h-6 flex items-center justify-center"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
+        <PWAPrompt
+          message={pwaMessages.readyOffline}
+          onClose={() => setShowOfflinePrompt(false)}
+        />
       )}
 
       {/* Install Prompt */}
       {showInstallPrompt && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-blue-500 text-white text-center shadow-md z-50">
-          <div className="flex items-center justify-between max-w-3xl mx-auto">
-            <p>{pwaMessages.installPrompt}</p>
-            <div className="flex items-center ml-4">
-              <button
-                onClick={promptInstall}
-                className="bg-white text-blue-500 px-3 py-1 rounded-md mr-2"
-              >
-                Install
-              </button>
-              <button
-                onClick={() => setShowInstallPrompt(false)}
-                className="bg-white bg-opacity-20 rounded-full w-6 h-6 flex items-center justify-center"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        </div>
+        <PWAPrompt
+          message={pwaMessages.installPrompt}
+          onClose={() => setShowInstallPrompt(false)}
+          onAction={promptInstall}
+          actionText="Install"
+        />
       )}
 
       {/* Offline Status Indicator */}
       {showOfflineStatus && (
-        <div
-          className={`fixed top-0 left-0 right-0 p-4 ${
-            isOffline ? "bg-orange-500" : "bg-green-500"
-          } text-white text-center shadow-md z-50`}
-        >
-          <div className="flex items-center justify-between max-w-3xl mx-auto">
-            <p>{isOffline ? pwaMessages.offlineMode : "Back online!"}</p>
-            <button
-              onClick={() => setShowOfflineStatus(false)}
-              className="ml-4 bg-white bg-opacity-20 rounded-full w-6 h-6 flex items-center justify-center"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
+        <PWAPrompt
+          message={isOffline ? pwaMessages.offlineMode : "Back online!"}
+          onClose={() => setShowOfflineStatus(false)}
+        />
       )}
 
       {/* Adaptive Timer Suggestion */}
@@ -2182,165 +1585,380 @@ const App = () => {
         </div>
 
         {/* Keyboard Shortcuts Help */}
-        {showShortcutHelp && renderKeyboardShortcuts()}
+        {showShortcutHelp && (
+          <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3
+                className={`text-lg font-medium ${themes[currentTheme].textPrimary}`}
+              >
+                Keyboard Shortcuts
+              </h3>
+              <button
+                onClick={() => setShowShortcutHelp(false)}
+                className="text-gray-500 text-sm"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {keyboardShortcuts.map((shortcut, index) => (
+                <div key={index} className="flex justify-between">
+                  <span className="px-2 py-1 bg-gray-100 rounded font-mono text-sm">
+                    {shortcut.key}
+                  </span>
+                  <span className="text-sm">{shortcut.description}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Menu Panel */}
         {menuOpen && (
           <div className="mb-6 bg-white rounded-lg shadow-sm overflow-hidden">
             {/* Tab Navigation */}
-            <div className="flex border-b overflow-x-auto">
-              {tabCategories.map((tab, index) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setCurrentTab(tab.id)}
-                  className={`px-4 py-3 text-sm font-medium flex items-center
-                    ${
-                      currentTab === tab.id
-                        ? `${
-                            themes[currentTheme].textPrimary
-                          } border-b-2 ${themes[
-                            currentTheme
-                          ].textPrimary.replace("text", "border")}`
-                        : "text-gray-500"
-                    }`}
-                >
-                  <span className="mr-2">{tab.icon}</span>
-                  <span>{tab.name}</span>
-                </button>
-              ))}
-              <button
-                onClick={() => setCurrentTab("customize")}
-                className={`px-4 py-3 text-sm font-medium flex items-center
-                  ${
-                    currentTab === "customize"
-                      ? `${
-                          themes[currentTheme].textPrimary
-                        } border-b-2 ${themes[currentTheme].textPrimary.replace(
-                          "text",
-                          "border"
-                        )}`
-                      : "text-gray-500"
-                  }`}
-              >
-                <span className="mr-2">⚙️</span>
-                <span>Customize</span>
-              </button>
-            </div>
+            <TabNavigation
+              tabCategories={tabCategories}
+              currentTab={currentTab}
+              setCurrentTab={setCurrentTab}
+              themes={themes}
+              currentTheme={currentTheme}
+            />
 
             {/* Tab Content */}
             <div className="p-4">
               {currentTab === "customize" ? (
-                renderUICustomization()
+                <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
+                  <h3
+                    className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
+                  >
+                    Customize Interface
+                  </h3>
+
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2">Active Features</h4>
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      {Object.values(uiModules).map((module) => (
+                        <div
+                          key={module.id}
+                          className={`p-2 rounded-lg border flex flex-col items-center 
+                            ${
+                              activeModules.includes(module.id)
+                                ? "border-blue-300 bg-blue-50"
+                                : "border-gray-200"
+                            }`}
+                        >
+                          <div className="text-xl mb-1">{module.icon}</div>
+                          <div className="text-xs font-medium text-center">
+                            {module.name}
+                          </div>
+                          <button
+                            onClick={() => toggleModuleActive(module.id)}
+                            className={`mt-2 px-2 py-1 rounded text-xs ${
+                              activeModules.includes(module.id)
+                                ? module.isCore
+                                  ? "bg-gray-300 cursor-not-allowed"
+                                  : "bg-red-500 text-white"
+                                : `${themes[currentTheme].primary} text-white`
+                            }`}
+                            disabled={
+                              module.isCore && activeModules.includes(module.id)
+                            }
+                          >
+                            {activeModules.includes(module.id)
+                              ? "Remove"
+                              : "Add"}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="font-medium mb-2">Interface Profiles</h4>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {Object.entries(interfaceProfiles).map(
+                        ([id, profile]) => (
+                          <button
+                            key={id}
+                            onClick={() => switchProfile(id)}
+                            className={`px-3 py-1.5 rounded-md text-sm ${
+                              currentProfile === id
+                                ? `${themes[currentTheme].primary} text-white`
+                                : "bg-gray-100"
+                            }`}
+                          >
+                            {profile.name}
+                          </button>
+                        )
+                      )}
+
+                      {/* Custom profiles */}
+                      {Object.entries(customProfiles).map(([id, profile]) => (
+                        <div key={id} className="flex items-center">
+                          <button
+                            onClick={() => switchProfile(id)}
+                            className={`px-3 py-1.5 rounded-l-md text-sm ${
+                              currentProfile === id
+                                ? `${themes[currentTheme].primary} text-white`
+                                : "bg-gray-100"
+                            }`}
+                          >
+                            {profile.name}
+                          </button>
+                          <button
+                            onClick={() => deleteCustomProfile(id)}
+                            className="py-1.5 px-2 bg-red-500 text-white rounded-r-md text-sm"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+
+                      <button
+                        onClick={() => setEditingProfile(true)}
+                        className="px-3 py-1.5 rounded-md text-sm bg-gray-200"
+                      >
+                        + Save Current
+                      </button>
+                    </div>
+
+                    {editingProfile && (
+                      <div className="flex mb-2">
+                        <input
+                          type="text"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md"
+                          placeholder="Profile name"
+                          value={newProfileName}
+                          onChange={(e) => setNewProfileName(e.target.value)}
+                        />
+                        <button
+                          onClick={createCustomProfile}
+                          className={`px-4 py-2 ${themes[currentTheme].primary} text-white rounded-r-md`}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={toggleHighFocusMode}
+                    className={`w-full px-4 py-3 ${
+                      highFocusMode
+                        ? "bg-red-500"
+                        : themes[currentTheme].primary
+                    } text-white rounded-lg font-medium flex items-center justify-center gap-2`}
+                  >
+                    <span>
+                      {highFocusMode
+                        ? "Exit Focus Mode"
+                        : "Enter High Focus Mode"}
+                    </span>
+                    <span>{highFocusMode ? "👁️" : "🔍"}</span>
+                  </button>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {getCurrentTabModules().map((moduleId) => (
                     <div key={moduleId}>
                       {moduleId === "timerSettings" &&
                         isModuleVisible("timerSettings") && (
-                          <div className="w-full p-4 bg-white rounded-lg mb-6 shadow-sm">
-                            <h3
-                              className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-                            >
-                              Timer Settings
-                            </h3>
-                            <div className="flex justify-between mb-2">
-                              <label
-                                htmlFor="workMinutes"
-                                className="font-medium"
-                              >
-                                Work duration (min):
-                              </label>
-                              <input
-                                id="workMinutes"
-                                type="number"
-                                className="w-20 p-2 border border-gray-300 rounded-md text-center"
-                                value={workMinutes}
-                                onChange={handleWorkMinutesChange}
-                                min="1"
-                                max="60"
-                              />
-                            </div>
-                            <div className="flex justify-between mb-2">
-                              <label
-                                htmlFor="breakMinutes"
-                                className="font-medium"
-                              >
-                                Break duration (min):
-                              </label>
-                              <input
-                                id="breakMinutes"
-                                type="number"
-                                className="w-20 p-2 border border-gray-300 rounded-md text-center"
-                                value={breakMinutes}
-                                onChange={handleBreakMinutesChange}
-                                min="1"
-                                max="30"
-                              />
-                            </div>
-
-                            <h3 className="font-medium mt-4 mb-3">
-                              Timer Presets
-                            </h3>
-                            <div className="grid grid-cols-3 gap-2">
-                              {Object.keys(timerPresets).map((preset) => (
-                                <button
-                                  key={preset}
-                                  onClick={() => handlePresetSelect(preset)}
-                                  className={`p-2 text-xs rounded-md text-center ${
-                                    currentPreset === preset
-                                      ? `${themes[currentTheme].primary} text-white`
-                                      : "bg-gray-100"
-                                  }`}
-                                >
-                                  {timerPresets[preset].name}
-                                  <div className="text-xs mt-1 font-normal">
-                                    {timerPresets[preset].work}m/
-                                    {timerPresets[preset].break}m
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
+                          <TimerSettings
+                            workMinutes={workMinutes}
+                            breakMinutes={breakMinutes}
+                            handleWorkMinutesChange={handleWorkMinutesChange}
+                            handleBreakMinutesChange={handleBreakMinutesChange}
+                            timerPresets={timerPresets}
+                            currentPreset={currentPreset}
+                            handlePresetSelect={handlePresetSelect}
+                            themes={themes}
+                            currentTheme={currentTheme}
+                          />
                         )}
 
                       {moduleId === "garden" && isModuleVisible("garden") && (
-                        <div className="w-full p-4 bg-white rounded-lg mb-4 shadow-sm">
-                          <h3 className="font-medium mb-3">Progress Garden</h3>
-                          {renderGarden()}
-                        </div>
+                        <ProgressGarden garden={garden} />
                       )}
 
                       {moduleId === "achievements" &&
                         isModuleVisible("achievements") && (
-                          <div className="w-full p-4 bg-white rounded-lg mb-4 shadow-sm">
-                            <h3 className="font-medium mb-3">Achievements</h3>
-                            {renderAchievements()}
-                          </div>
+                          <Achievements achievements={achievements} />
                         )}
 
                       {moduleId === "breathing" &&
-                        isModuleVisible("breathing") &&
-                        renderBreathingExercise()}
+                        isModuleVisible("breathing") && (
+                          <BreathingExercise
+                            breathingPhase={breathingPhase}
+                            breathingActive={breathingActive}
+                            toggleBreathingExercise={toggleBreathingExercise}
+                            themes={themes}
+                            currentTheme={currentTheme}
+                          />
+                        )}
 
                       {moduleId === "distraction" &&
-                        isModuleVisible("distraction") &&
-                        renderDistractionJournal()}
+                        isModuleVisible("distraction") && (
+                          <DistractionJournal
+                            distractions={distractions}
+                            currentDistraction={currentDistraction}
+                            handleDistractionsChange={handleDistractionsChange}
+                            saveDistraction={saveDistraction}
+                            themes={themes}
+                            currentTheme={currentTheme}
+                          />
+                        )}
 
                       {moduleId === "whiteNoise" &&
-                        isModuleVisible("whiteNoise") &&
-                        renderWhiteNoisePlayer()}
+                        isModuleVisible("whiteNoise") && (
+                          <WhiteNoisePlayer
+                            whiteNoiseOptions={whiteNoiseOptions}
+                            currentSound={currentSound}
+                            soundPlaying={soundPlaying}
+                            playWhiteNoise={playWhiteNoise}
+                            themes={themes}
+                            currentTheme={currentTheme}
+                          />
+                        )}
 
-                      {moduleId === "eyeRest" &&
-                        isModuleVisible("eyeRest") &&
-                        renderEyeRestReminder()}
+                      {moduleId === "eyeRest" && isModuleVisible("eyeRest") && (
+                        <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
+                          <h3
+                            className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
+                          >
+                            Eye Rest Reminder
+                          </h3>
+
+                          <div className="mb-4 p-3 bg-blue-50 rounded-lg text-sm">
+                            <p>
+                              Follow the 20-20-20 rule: Every 20 minutes, look
+                              20 feet away for 20 seconds.
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={toggleEyeRest}
+                            className={`w-full px-4 py-2 ${
+                              eyeRestEnabled
+                                ? "bg-red-500"
+                                : themes[currentTheme].primary
+                            } text-white rounded-md`}
+                          >
+                            {eyeRestEnabled
+                              ? "Disable Reminders"
+                              : "Enable Reminders"}
+                          </button>
+                        </div>
+                      )}
 
                       {moduleId === "challenges" &&
-                        isModuleVisible("challenges") &&
-                        renderChallenges()}
+                        isModuleVisible("challenges") && (
+                          <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
+                            <h3
+                              className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
+                            >
+                              Challenges
+                            </h3>
+
+                            <div className="mb-4">
+                              <h4 className="font-medium mb-2">
+                                Active Challenges
+                              </h4>
+                              <div className="space-y-2">
+                                {challenges.map((challenge) => {
+                                  const isActive = activeChallenges.includes(
+                                    challenge.id
+                                  );
+                                  const isCompleted =
+                                    completedChallenges.includes(challenge.id);
+
+                                  if (isCompleted) return null;
+
+                                  return (
+                                    <div
+                                      key={challenge.id}
+                                      className={`p-3 rounded-lg border flex items-center gap-3 ${
+                                        isActive
+                                          ? "border-blue-300 bg-blue-50"
+                                          : "border-gray-200"
+                                      }`}
+                                    >
+                                      <div className="text-2xl">
+                                        {challenge.icon}
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="font-medium">
+                                          {challenge.name}
+                                        </div>
+                                        <div className="text-xs text-gray-600">
+                                          {challenge.description}
+                                        </div>
+                                      </div>
+                                      <button
+                                        onClick={() =>
+                                          toggleActiveChallenge(challenge.id)
+                                        }
+                                        className={`px-3 py-1 rounded-md text-xs font-medium ${
+                                          isActive
+                                            ? "bg-red-500 text-white"
+                                            : themes[currentTheme].primary +
+                                              " text-white"
+                                        }`}
+                                      >
+                                        {isActive ? "✕" : "+"}
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {completedChallenges.length > 0 && (
+                              <div>
+                                <h4 className="font-medium mb-2">
+                                  Completed Challenges
+                                </h4>
+                                <div className="space-y-2">
+                                  {challenges
+                                    .filter((c) =>
+                                      completedChallenges.includes(c.id)
+                                    )
+                                    .map((challenge) => (
+                                      <div
+                                        key={challenge.id}
+                                        className="p-3 rounded-lg border border-green-300 bg-green-50 flex items-center gap-3"
+                                      >
+                                        <div className="text-2xl">
+                                          {challenge.icon}
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="font-medium">
+                                            {challenge.name}
+                                          </div>
+                                          <div className="text-xs text-gray-600">
+                                            {challenge.description}
+                                          </div>
+                                        </div>
+                                        <div className="text-green-500 text-xl">
+                                          ✓
+                                        </div>
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                       {moduleId === "bookQuotes" &&
-                        isModuleVisible("bookQuotes") &&
-                        renderBookQuotes()}
+                        isModuleVisible("bookQuotes") && (
+                          <BookQuotes
+                            currentQuote={currentQuote}
+                            themes={themes}
+                            currentTheme={currentTheme}
+                          />
+                        )}
                     </div>
                   ))}
                 </div>
@@ -2357,124 +1975,92 @@ const App = () => {
                 </div>
               )}
 
-              {currentTab === "offline" && renderOfflineInfo()}
+              {currentTab === "offline" && (
+                <div className="p-6 bg-white rounded-lg shadow-sm mb-6">
+                  <h3
+                    className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
+                  >
+                    Offline Capabilities
+                  </h3>
+
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg text-sm">
+                    <p>
+                      ADHD Timer works offline! Add it to your home screen for a
+                      better experience.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                      <p className="text-sm">Ready for offline use</p>
+                    </div>
+
+                    {installable && (
+                      <button
+                        onClick={promptInstall}
+                        className={`px-4 py-2 ${themes[currentTheme].primary} text-white rounded-md text-sm`}
+                      >
+                        Add to Home Screen
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Task Input */}
         {isModuleVisible("taskInput") && (
-          <div className="mx-auto max-w-md w-full p-6 bg-white rounded-lg mb-8 shadow-sm">
-            <h3
-              className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-            >
-              What are you working on?
-            </h3>
-            <input
-              type="text"
-              className="w-full px-3 py-3 border border-gray-300 rounded-md text-base mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={currentTask}
-              onChange={handleTaskChange}
-              placeholder="Enter your current task..."
-            />
-            {isModuleVisible("focusTips") && (
-              <div
-                className={`p-4 rounded-lg text-white text-center ${
-                  mode === "work"
-                    ? themes[currentTheme].primary
-                    : themes[currentTheme].secondary
-                }`}
-              >
-                <strong>Focus Tip:</strong> {currentTip}
-              </div>
-            )}
-          </div>
+          <TaskInput
+            currentTask={currentTask}
+            handleTaskChange={handleTaskChange}
+            currentTip={currentTip}
+            themes={themes}
+            currentTheme={currentTheme}
+            mode={mode}
+            isModuleVisible={isModuleVisible}
+          />
         )}
 
         {/* Book Quote - Only in full mode */}
-        {isModuleVisible("bookQuotes") && !menuOpen && renderBookQuotes()}
+        {isModuleVisible("bookQuotes") && !menuOpen && (
+          <BookQuotes
+            currentQuote={currentQuote}
+            themes={themes}
+            currentTheme={currentTheme}
+          />
+        )}
 
         {/* Timer Container */}
         {isModuleVisible("timerBasic") && (
-          <div className="flex flex-col items-center justify-center mx-auto max-w-md mb-8">
-            {/* Timer Display */}
-            <div
-              className={`text-7xl font-bold ${themes[currentTheme].textPrimary} mb-6 ${themes[currentTheme].timerDisplay} bg-opacity-40 px-8 py-4 rounded-xl w-full text-center shadow-sm relative`}
-            >
-              {formatTime()}
-              {/* Mode indicator */}
-              <div className="absolute top-2 right-2 text-xs px-2 py-0.5 rounded-full bg-white bg-opacity-30">
-                {mode === "work" ? "Focus" : "Break"}
-              </div>
-            </div>
+          <Timer
+            formatTime={formatTime}
+            secondsLeft={secondsLeft}
+            isActive={isActive}
+            mode={mode}
+            startTimer={startTimer}
+            pauseTimer={pauseTimer}
+            resetTimer={resetTimer}
+            themes={themes}
+            currentTheme={currentTheme}
+          />
+        )}
 
-            {/* Control Buttons */}
-            <div className="flex gap-4 mb-6 w-full justify-center">
-              <button
-                onClick={startTimer}
-                disabled={isActive}
-                className={`px-3 py-3 border-none rounded-full ${
-                  mode === "work"
-                    ? themes[currentTheme].primary
-                    : themes[currentTheme].secondary
-                } text-white font-bold cursor-pointer transition-all duration-200 text-base flex-1 max-w-32 text-center disabled:bg-gray-300 disabled:cursor-not-allowed hover:shadow-md hover:-translate-y-1`}
-              >
-                {mode === "work" ? "Start Focus" : "Start Break"}
-              </button>
-              <button
-                onClick={pauseTimer}
-                disabled={!isActive}
-                className="px-3 py-3 border-none rounded-full bg-orange-500 text-white font-bold cursor-pointer transition-all duration-200 text-base flex-1 max-w-32 text-center disabled:bg-gray-300 disabled:cursor-not-allowed hover:shadow-md hover:-translate-y-1"
-              >
-                Pause
-              </button>
-              <button
-                onClick={resetTimer}
-                className="px-3 py-3 border-none rounded-full bg-gray-500 text-white font-bold cursor-pointer transition-all duration-200 text-base flex-1 max-w-32 text-center hover:shadow-md hover:-translate-y-1"
-              >
-                Reset
-              </button>
-            </div>
-
-            {/* Timer Settings in non-menu view */}
-            {isModuleVisible("timerSettings") && !menuOpen && (
-              <div className="w-full p-4 bg-white rounded-lg mb-6 shadow-sm">
-                <h3
-                  className={`text-lg font-medium ${themes[currentTheme].textPrimary} mb-4`}
-                >
-                  Timer Settings
-                </h3>
-                <div className="flex justify-between mb-2">
-                  <label htmlFor="workMinutes" className="font-medium">
-                    Work duration (min):
-                  </label>
-                  <input
-                    id="workMinutes"
-                    type="number"
-                    className="w-20 p-2 border border-gray-300 rounded-md text-center"
-                    value={workMinutes}
-                    onChange={handleWorkMinutesChange}
-                    min="1"
-                    max="60"
-                  />
-                </div>
-                <div className="flex justify-between mb-2">
-                  <label htmlFor="breakMinutes" className="font-medium">
-                    Break duration (min):
-                  </label>
-                  <input
-                    id="breakMinutes"
-                    type="number"
-                    className="w-20 p-2 border border-gray-300 rounded-md text-center"
-                    value={breakMinutes}
-                    onChange={handleBreakMinutesChange}
-                    min="1"
-                    max="30"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+        {/* Timer Settings in non-menu view */}
+        {isModuleVisible("timerSettings") && !menuOpen && (
+          <TimerSettings
+            workMinutes={workMinutes}
+            breakMinutes={breakMinutes}
+            handleWorkMinutesChange={handleWorkMinutesChange}
+            handleBreakMinutesChange={handleBreakMinutesChange}
+            timerPresets={timerPresets}
+            currentPreset={currentPreset}
+            handlePresetSelect={handlePresetSelect}
+            themes={themes}
+            currentTheme={currentTheme}
+          />
         )}
 
         {/* Session completion message */}
@@ -2490,8 +2076,15 @@ const App = () => {
         {/* Show breathing exercise during break */}
         {mode === "break" &&
           showBreathingExercise &&
-          isModuleVisible("breathing") &&
-          renderBreathingExercise()}
+          isModuleVisible("breathing") && (
+            <BreathingExercise
+              breathingPhase={breathingPhase}
+              breathingActive={breathingActive}
+              toggleBreathingExercise={toggleBreathingExercise}
+              themes={themes}
+              currentTheme={currentTheme}
+            />
+          )}
 
         {/* Email Capture - Always at bottom, even in focus mode */}
         <div className="max-w-lg mx-auto my-8 p-8 bg-white rounded-lg shadow-lg text-center">
@@ -2529,13 +2122,9 @@ const App = () => {
         <footer className="text-center mt-12 p-6 text-gray-600 text-sm">
           <p>© {new Date().getFullYear()} ADHD Mastery. All rights reserved.</p>
           <p className="mt-2">
-            Need more help with ADHD? Check out{" "}
-            <a
-              href="#"
-              className={`${themes[currentTheme].textPrimary} no-underline hover:underline`}
-            >
-              my ADHD Book
-            </a>
+            Need more help with ADHD? Check out href="#" className=
+            {`${themes[currentTheme].textPrimary} no-underline hover:underline`}
+            <a>my ADHD Book</a>
           </p>
           <div className="mt-4 flex justify-center items-center text-xs">
             <div
